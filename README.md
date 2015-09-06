@@ -323,17 +323,14 @@ hasNoControl()
 --容易引起掉线还在测试中
 待测试
 
-4. makeEnemiesTable() 生成一个40码内的敌对目标数组，会自动检测40码内所有敌对目标。对应的下属判定条件：
+4. makeEnemiesTable(r) 生成一个40码内的敌对目标数组，会自动检测40码内所有敌对目标。对应的下属判定条件：
 1. 用enemiesTable.unit 对应符合条件的目标
 2. 用enemiesTable.distance  对应符合条件的目标的距离
 3. 用enemiesTable.hp 对应符合条件的目标的血量--203更新
 castingUnit(Unit) - 如果Unit在读条，返回true
 useItem(itemID) - 使用物品或药水
 
-GhUnitTargetIsPlayer(unit) - Unit的目标是否是自己
-
 useAoE(Radius) - 以自身为圆心Radius为半径进行AOE判定，必须有"智能AoE"和"AoE计数"这两个UI选项，且名称必须为这两个
 
 GlobalInterrupt(spellid,radius,percentint) - 使用spellid技能对以自身为圆心Radius为半径的范围内所有敌人进行打断，不用切换目标或者做焦点
 
-AutoTaunt(spellid,radius) - 使用spellid技能对以自身为圆心Radius为半径的范围内所有目标不是玩家自身的敌人进行嘲讽，BOSS不嘲讽
