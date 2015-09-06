@@ -1,5 +1,5 @@
-# Godhand-Classic-
-Based on Firehack
+# Godhand-Classic
+Based on Firehack. Special thanks to l0l1dk, Badboy , Reel , Wowbee , Magiccast and etc. 
 一、施法类
 1. 单体施法类：castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip)
 参数：
