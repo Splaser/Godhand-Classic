@@ -1,0 +1,25 @@
+## Interface: 60200
+## Title: 神手1.11e
+## Title-zhCN:@|cff00ff00GodHand-1.11e modby LTG
+## Version: 20150728-1.11e
+## Notes: |cffbc8f8f神手核心库
+## DefaultState: Enabled
+## LoadOnDemand: 0
+## SavedVariables: GDConfig,GDScript,GDHelper
+## SavedVariablesPerCharacter:GDScriptPer,GDHelperPer
+GD.xml
+Class\Class.xml
+
+## Reel
+API.lua
+Reel.lua
+Lures.lua
+Reel.xml
+
+States\EquipFishingGear.lua
+States\UseBuff.lua
+States\UseLure.lua
+States\Catching.lua
+States\Looting.lua
+States\Moving.lua
+States\Fishing.lua
