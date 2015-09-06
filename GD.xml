@@ -1,0 +1,42 @@
+<Ui xmlns="http://www.blizzard.com/wow/ui/" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.blizzard.com/wow/ui/">
+	<Script file="Locales\zhCN.lua" />
+	<Script file="Locales\zhTW.lua" />
+	<Script file="Library\LibRangeCheck-2.0.lua"/>
+	<Script file="Library\DropDownMenu-1.0.lua" />
+	<Script file="Library\Serializer-3.0.lua" />
+	<Script file="Library\FAIAP.lua" />
+	<Script file="Library\Frame.lua" />
+	<Script file="Localization.lua" />
+	<Script file="GD.Main.lua"/>
+	<Script file="GD.Script.lua"/>
+	<Script file="GD.Spell.lua" />
+	<Script file="GD.Functions.lua" />
+	<Script file="System\Beautycase.lua" />
+	<Script file="System\Core.lua" />
+	<Script file="System\GeneralFunctions.lua" />
+	<Script file="System\Interrupts.lua" />
+	<Script file="System\ObjectsManagers.lua" />
+	<Script file="System\UI.lua" />
+	<Script file="System\UsefulFeatures.lua" />
+	<Script file="System\Config\Config.lua" />
+	<Script file="System\Config\ConfigBox.lua" />
+	<Script file="System\Config\ConfigCheck.lua" />
+	<Script file="System\Config\ConfigDropDown.lua" />
+	<Script file="System\Config\ConfigText.lua" />
+	<Script file="System\Config\ConfigTitle.lua" />
+	<Script file="System\Config\ConfigWrap.lua" />
+	<Script file="System\Libs\LibRangeCheck-2.0\LibRangeCheck-2.0.lua" />
+	<Frame>
+		<Scripts>
+			<OnLoad>
+				GD_OnLoad(self);
+			</OnLoad>
+			<OnEvent>
+				GD_OnEvent(self,event,...);
+			</OnEvent>
+			<OnUpdate>
+				GD_OnUpdate(arg1);
+			</OnUpdate>
+		</Scripts>
+	</Frame>
+</Ui>
