@@ -1,0 +1,21 @@
+<Bindings>
+    <Binding name="Show" header="GD">
+		if GDHelperFrame:IsShown() then
+			GDHelperFrame:Hide()
+		else
+			GDHelperFrame:Show()
+		end
+    </Binding>
+    <Binding name="StartStop" header="GD">
+		if GD.AutoHelper.Start then
+			GDHelper_SetAutoScript(nil);
+		else
+			GDHelper_SetAutoScript(true);
+		end
+    </Binding>
+    <Binding name="Stop" header="GD">
+		if(GD.AutoHelper.Start)then
+			GDHelper_SetAutoScript(nil);
+		end
+    </Binding>
+</Bindings>
