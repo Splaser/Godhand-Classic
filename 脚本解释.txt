@@ -1,0 +1,223 @@
+GH虽然暂时没有友好的UI界面，但是ta的脚本还是易于编写和修改的。对于新人如何快速上手，我这里有几个小技巧分享给大家。
+
+1. 首先就是要对你制作的脚本每个技能都要大体上熟悉他们的优先级，然后初步的，只要套用castspell框架，如下：
+--简单施法框架
+if castSpell("target",法术id,背后释放可以用true不能用false,移动施法不能写true可以写false) then
+        return;
+    end
+
+
+如果你输出技能优先级A>B>C，你只要得知ABC分别的法术ID，然后填入框架内，连续写三个就ok了，这时就实现了A，B，C各自cd技能依次按照优先级卡cd释放。
+举例：
+if castSpell("target",A的法术id,背后释放可以用true不能用false,移动施法不能写true可以写false) then
+        return;
+    end
+if castSpell("target",B的法术id,背后释放可以用true不能用false,移动施法不能写true可以写false) then
+        return;
+    end
+if castSpell("target",C的法术id,背后释放可以用true不能用false,移动施法不能写true可以写false) then
+        return;
+    end
+
+
+
+
+2.具体技能具体特殊条件施法时，上述框架不要动，直接前边再加一行条件判定，末尾再写一个end即可。
+如果A技能要在对面身上有xxxxdebuff的时候再丢，那么很简单。
+只要加入下边的绿字部分就可以了。
+if getDebuffRemain("target",debuff的法术id)>0 then
+if castSpell("target",法术id,背后释放可以用true不能用false,移动施法不能写true可以写false) then
+        return;
+    end
+end
+这样就可以实现有xxxxdebuff时候对目标施放技能了，很简单。
+
+3. AOE技能应该怎么写呢，这里也给出1个丢地上绿圈技能的例子（需要且只能Firehack解锁目前）：
+if getNumEnemies("target",判定半径)>=判定目标数量大于这个数字算作aoe   then
+        if castGround("target",地上出圈的aoe技能法术id,该技能的最大施法距离) then
+            return;
+        end
+    end
+
+
+具体实例：
+if getNumEnemies("target",8)>=4   then
+        if castGround("target",火雨id,40)then
+            return;
+        end
+    end
+
+
+如果技能不是地上出绿圈的，直接套用前边的丢技能框架加入数量判定即可：
+if getNumEnemies("target",判定半径)>=判定目标数量大于这个数字算作aoe   then
+    if castSpell("target",法术id,背后释放可以用true不能用false,移动施法不能写true可以写false) then
+        return;
+    end
+end
+具体实例：
+
+
+if getNumEnemies("target",8)>=4 and isInMelee("target") then   --and isInMelee("target")是引入的近战范围判定 保证震荡波不丢空，新手可以无视
+      if castSpell("target",震荡波id,false,false) then
+        return;
+    end
+end
+
+掌握以上两点基本大多数技能参考函数手册就可以自己写了。aoe部分尽量写在单体木桩之前，否则aoe技能可能会被单体技能卡cd。
+
+如果你大体了解了以上，可以继续看以下的进阶建议。
+不定期更新，想到哪里写到哪里，见谅。
+
+1.GH有很多共享的脚本，你可以复制过去找个对应职业试试看，尽量弄清楚每个部分是什么意思。然后就可以修改成适合自己的脚本了。
+
+2.如果脚本执行报错，注意留意报错的行数和内容，一般仔细看看就能发现错误。多试试就好了，很多脚本一次基本都是不可能完成的，都是一边试验一边改动，所以要有耐心。
+
+3.要判定在xxx法术CD情况不丢/丢yyyy技能只需要判定if条件加入getSpellCD(xxx法术id)判定即可，可以嵌套在最外层循环，对and等等逻辑熟悉的可以直接and加入既定存在的条件后部分。
+
+
+4.要判定A，B，C，D四个（更多的也可以）增益buff2个以上触发丢xxx技能又要怎么办呢？也很简单，只要事先定义四个判定变量a,b,c,d
+local a,b,c,d=0,0,0,0
+--然后你需要找出ABCD对应的buffid对应abcd条件如下
+if UnitBuffID("player",A的法术id) then  --这里用getBuffRemain()也可以，适用于对爆发技能释放掌控时机更苛刻要求的人，为了简化举例，就用存在性了
+  a=1
+end
+if UnitBuffID("player",B的法术id) then
+  b=1
+
+end
+if UnitBuffID("player",C的法术id) then
+  c=1
+
+end
+
+
+if UnitBuffID("player",D的法术id) then
+   d=1
+
+end
+
+
+--以上buff如果存在对应的变量就会被赋值为1.这时重要的一步如下
+if a+b+c+d>=2 then  
+  if castSpell("player",爆发技能法术id,true,false) then
+        return;   --return到脚本前，要不然abcd会一直为1
+    end
+end
+很简单吧，只要变量之和大于2，就表示至少触发了2个buff，我们就可以找最好的时机爆发技能了！如果你有更多buff，只需要多定义几个临时变量（注意严格对应大小写）即可。当然根据权重不同，对应buff赋值不同大小的数字也可以，如果A的buff比B的buff提高更多a可以赋值为2，b继续赋值1，最后判定之和大于3就可以，这时必须BCD三个都触发且无A存在才等同于AB同时触发而CD不触发的情况。当然 a*b*c*d~=0或者 a*b*c*d==1 同样可以用来判定四个buff同时触发的情况，脚本是灵活的，尽情发挥想象力吧。
+
+5.循环语句教程
+
+这一部分对逻辑和返回值判定有一定要求，代码很简单，但是一个小错误会引起完全不同的结果。希望大家细心调试任何带有for开头的循环语句。
+我举出的例子比月总更新的补buff更具体一点，也遵循从简到繁的过程：
+
+第一个例子  我是ms，团队里有人血量低于40%且在我眼皮子底下（施法范围内），我就马上丢他痛苦压制：
+
+GroupInfo();                 --这个是团队模块声明，不写无法调用团队框架，即无法正常遍历循环团队/队友
+for i = 1, #members do    --for循环开始,这一句话的意思是变量i从1到团队队友总个数开始循环，里边的内容循环一次以后，i自己会增加1，一直到i增加至#members的值为止，一共要循环#members次。 
+       if getHP(members.Unit)<40 then   --循环内的这是具体判定条件，用members.Unit （一定注意中间用英文的句号连接）代替我们一般用的“target”、“focus”等等，作为了参数的模板，但是一样可以进行判定。
+            if castSpell(members.Unit,33206,true,false) then
+                return;
+            end                          --内层技能释放我就不多解释了，33206是痛苦压制的法术id，记住也要用members.Unit代替原函数中的Unit
+        end
+    end
+
+以上为止，我们就可以实现自动对团队里的濒危小伙伴丢治疗的大技能，同理也可以正常读条给他加血，只要替代对应法术id即可。
+
+
+第二个例子  当团队里有5个以上的队友血量都很低，我要用群加技能治疗祷言给他们加血，如何准确的判定：
+--相同的部分我就不加注释了
+首先我们要定义一个临时存储血量低的小伙伴的计数变量
+
+
+local hplesscount=0  --计数初始化
+GroupInfo(); 
+  for i = 1, #members do   --循环开始计算符合条件的目标数量
+        if getHP(members.Unit)<75 and getDistance(members.Unit,"player")<=30 then   --团队队友的血量判定后边的and是保持在施法距离内祷言能加到血
+            hplesscount=hplesscount+1;     --每符合条件计数就会增加1，注意这里可以不能写return，否则会计数会卡住。
+        end
+    end
+    if hplesscount>=5 then                            --如果大于5个人，就放技能
+        if castSpell("player",596,true,true) then     --祷言可以对自己释放但是还是可以加周围30码的人
+            hplesscount=0;                           --记得放完技能清零计数，否则会一直丢，不写return
+        end
+    end
+
+有了以上的框架我可以照猫画虎写一个神圣新星的，因为我当时忘了用这个吊炸天的技能
+
+local xxcount=0
+for i = 1, #members do 
+        if getHP(members.Unit)<=90 and getDistance(members.Unit,"player")<=12 then
+            xxcount=xxcount+1;
+        end
+    end
+    if xxcount>=5  then
+        if castSpell("player",132157,true,false) then    
+            xxcount=0;
+        end
+    end
+
+
+这样就可以实现对周围的人判定完成丢新星。循环语句基本介绍完成。
+6. xxx技能延迟x秒释放框架
+这里感谢大象无形提供的思路，我们经常会碰到读条上dot/debuff技能会因为插件判定问题多释放一次，利用lua语言的特性，这里有一个很好的解决办法。
+--首先定义一个计时的临时变量
+if t==nil then   --只有t不存在时才允许赋值运算
+    t=GetTime();
+end
+
+--技能释放环节
+if  dot持续时间判定这里省略 and GetTime()>=t then  --这里t还是刚才的初始时间
+        if castSpell("target",xxx读条dot技能法术id,false,true,true) then
+            t=GetTime()+延长时间;  --这里t已经变成了现在时间+自行赋值的延长值
+            return;
+        end
+    end
+
+
+以上就可以实现延长xxx秒释放技能了
+
+例子：
+2秒以后才判定是不是还要丢献祭
+if nextImmolate==nil then
+    nextImmolate=GetTime();
+
+if  getDebuffRemain("target",348,"player")<=1.5 and GetTime()>=nextImmolate then
+        if castSpell("target",348,false,true,true) then
+            nextImmolate=GetTime()+2;
+            return;
+        end
+end
+7. 起手式写法 if getCombatTime()<5 then 
+--释放你安排好顺序的技能 
+1,2,3,4,5 
+setgo = 1
+if setgo ==1 then 正常循环 
+end
+end
+
+如果12345只能丢一次
+可以采用锁定变量控制：
+if castSpell("target",1000,true,false) then setone = 1 return; end
+if castSpell("target",1001,true,false) and setone == 1 then settwo =2 return; end
+
+8. 用属性判断爆发条件，让你的脚本自动开爆发技能
+
+首先需要这些参数：
+
+print("急速=",GetHaste())
+print("精通=",GetMastery())
+print("溅射=",GetMultistrike())
+print("暴击=",GetCritChance ())
+print("全能等级=".." ".. GetCombatRating(29))
+print("全能伤害加成=".." ".. GetCombatRatingBonus(29))
+Print("攻击强度",UnitAttackPower("player"))
+
+--初始值和当前值 省略了后两位加成位
+t1,t2=UnitStat("player",1)  --第二个参数2是敏捷，3是耐力，4是智力，5是精神
+--这里以力量为例子
+print("初始力量",t1,"当前力量",t2)
+
+
+如果你带了触发加力量的饰品，那么只需
+t2>1.2*t1 --力量超出初始值20%
+开爆发技能就行了 其他可以类比
