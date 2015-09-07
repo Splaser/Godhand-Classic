@@ -1,4 +1,4 @@
-## Interface: 60200
+﻿## Interface: 60200
 ## Title: 神手1.11e
 ## Title-zhCN:@|cff00ff00GodHand-1.11e modby LTG
 ## Version: 20150728-1.11e

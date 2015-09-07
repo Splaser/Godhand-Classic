@@ -1,4 +1,4 @@
-local l=GetLocale()=="zhCN"
+﻿local l=GetLocale()=="zhCN"
 if not l then 
 	return;
 end

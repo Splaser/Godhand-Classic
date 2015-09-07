@@ -56,7 +56,11 @@ function GDIsRun(spell,unit,gcd,special,isRun,NOCD,EnergyDemand)--是否可以�
 end
 
 function GDRun(spell,unit,mouse) -- 施放技能
-
+	
+	--if (GetTime() - GD.Spell.Sleep )<=0.01 then
+	--print("因为时间返回")
+	--	return false;
+	--end;
 
 	unit=GDUnit(unit,"target");
 	
@@ -1287,7 +1291,7 @@ function GDPartyScript(String) --獲得符合條件的小隊人物信息--UnitGU
 	
 	local str ='function TEMP_GDParty(name,class,race,spell,unit,guid,spellcd) if ' .. String .. ' then return true; else return false; end end'
 	
-	
+	--DEFAULT_CHAT_FRAME:AddMessage(str)
 	
 	RunScript(str);
 	
