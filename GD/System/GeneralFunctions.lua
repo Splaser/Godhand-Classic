@@ -2337,18 +2337,7 @@ function amac(Unit,Interrupt,Time) --获得指定目标正在施放的法术名�
 						end
 					end
 						
-				--else
-					
-					--if not Interrupt then
-					--return c;
-					--else
-					--	if not i then
-						--return c;
-						--end
-					--end
-					
-					
-				--end
+				
 			end
 		end
 		
@@ -2605,6 +2594,7 @@ function isCastingCCSpellLast(Unit)
 		"妖术",	-- Shaman - Hex
 		"恐惧",	-- Warlock - Fear
 		"混乱之箭",
+		"鬼影缠身",
 		
 	}
 	for i=1,#longTimeCCstr do
@@ -2627,7 +2617,7 @@ function GlobalIntCC(spellid,radius,face,latancy)
         for i = 1, #enemiesTable do
         	local thisUnit = enemiesTable[i].unit
             if UnitCanAttack(thisUnit,"player") == true and enemiesTable[i].distance <= radius and  isCastingCCSpell(thisUnit,latancy) then
-                if castSpell(thisUnit,spellid,face,false,false,false) then
+                if castSpell(thisUnit,spellid,face,false,false,false,_,true,_) then
                 print("强行打断",UnitName(thisUnit),"的控制法术") 
                		return true
                	end
@@ -3228,11 +3218,14 @@ function WiseAoe(unit,spellid,radius,nearbyradius)
 end
 
 --自动进攻驱散 保护和反恐结界
-function GlobalDispel(spellid)
+function GlobalDispel(spellid,radius)
+	if radius == nil then
+		radius = 40
+	end
 	if canCast(spellid) then
 		for i = 1, #enemiesTable do
 			local thisUnit = enemiesTable[i].unit
-			if UnitCanAttack(thisUnit,"player") == true and enemiesTable[i].distance <= 40 and  UnitIsPlayer(thisUnit) and isMagicinv(thisUnit) == false and isLongTimeCCed(thisUnit) == false  then
+			if UnitCanAttack(thisUnit,"player") == true and enemiesTable[i].distance <= radius and  UnitIsPlayer(thisUnit) and isMagicinv(thisUnit) == false and isLongTimeCCed(thisUnit) == false  then
 				if getBuffRemain(thisUnit, 6346) > 2  or getBuffRemain(thisUnit, 1022) > 2 then
 					if castSpell(thisUnit,spellid,false,false) then
 						print("进攻驱散",UnitName(thisUnit))
