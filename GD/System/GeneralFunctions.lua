@@ -544,7 +544,9 @@ function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,
 		local spellRange = select(6,GetSpellInfo(SpellID))
 		if DistanceSkip == nil then DistanceSkip = false end
 		if spellRange == nil or (spellRange < 4 and DistanceSkip==false) then spellRange = 4 end
-		if DistanceSkip == true then spellRange = 40 end
+		if DistanceSkip == true or IsSpellInRange(tostring(GetSpellInfo(SpellID)),unit) == 1 then 
+			spellRange = 40 
+		end
 		-- Check unit,if it's player then we can skip facing
 		if (Unit == nil or UnitIsUnit("player",Unit)) or -- Player
 			(Unit ~= nil and UnitIsFriend("player",Unit)) then  -- Ally
