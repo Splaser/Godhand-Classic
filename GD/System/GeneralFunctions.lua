@@ -544,7 +544,7 @@ function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,
 		local spellRange = select(6,GetSpellInfo(SpellID))
 		if DistanceSkip == nil then DistanceSkip = false end
 		if spellRange == nil or (spellRange < 4 and DistanceSkip==false) then spellRange = 4 end
-		if DistanceSkip == true or IsSpellInRange(tostring(GetSpellInfo(SpellID)),unit) == 1 then 
+		if DistanceSkip == true or IsSpellInRange(tostring(GetSpellInfo(SpellID)),Unit) == 1 then 
 			spellRange = 40 
 		end
 		-- Check unit,if it's player then we can skip facing
@@ -559,7 +559,7 @@ function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,
 			-- skip movement check during spiritwalkers grace and aspect of the fox
 			or UnitBuffID("player",79206) ~= nil  then
 			-- if ability is ready and in range
-			if getSpellCD(SpellID) == 0 and (getDistance("player",Unit) <= spellRange or DistanceSkip == true) then
+			if getSpellCD(SpellID) == 0 and ((getDistance("player",Unit) <= spellRange or IsSpellInRange(tostring(GetSpellInfo(SpellID)),Unit) == 1) or DistanceSkip == true) then
 				-- if spam is not allowed
 				if SpamAllowed == false then
 					-- get our last/current cast
