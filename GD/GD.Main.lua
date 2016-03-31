@@ -509,7 +509,7 @@ function Lib.Init()
 	main.Editer=Lib.GDScriptEditerFrame(main);
 	
 	local zone = GDFrame.CreateZoneText("GDZoneText", UIParent);
-	local minimap = GDFrame.CreateMinimapButton("GDMinimapButton", "Interface\\Addons\\WBE\\GD.tga")
+	local minimap = GDFrame.CreateMinimapButton("GDMinimapButton", "Interface\\Addons\\GD\\GD.tga")
 	minimap:RegisterDB("GDIcon")
 	minimap:AddTooltipLine(L["GD_TITLE"])
 	minimap:AddTooltipLine(L["GD_TOOLTIP"], 0, 1, 0, 1)
@@ -518,30 +518,4 @@ function Lib.Init()
 	GDMenu = DropDownMenu_GetHandle()
 end
 Lib.Init();
---ChatOverLay
-local function onUpdate(self,elapsed)
-	if self.time < GetTime() - 2.0 then if self:GetAlpha() == 0 then self:Hide(); else self:SetAlpha(self:GetAlpha() - 0.02); end end
-end
-chatOverlay = CreateFrame("Frame",nil,ChatFrame1)
-chatOverlay:SetSize(ChatFrame1:GetWidth(),50)
-chatOverlay:Hide()
-chatOverlay:SetScript("OnUpdate",onUpdate)
-chatOverlay:SetPoint("TOP",0,0)
-chatOverlay.text = chatOverlay:CreateFontString(nil,"OVERLAY","MovieSubtitleFont")
-chatOverlay.text:SetAllPoints()
-chatOverlay.texture = chatOverlay:CreateTexture()
-chatOverlay.texture:SetAllPoints()
-chatOverlay.texture:SetTexture(0,0,0,.50)
-chatOverlay.time = 0
-function ChatOverlay(Message, FadingTime)
-	if FadingTime == nil then
-		FadingTime = 0.5;
-	end
-	--if getOptionCheck("Overlay Messages") then
-		chatOverlay:SetSize(ChatFrame1:GetWidth(),50)
-		chatOverlay.text:SetText(Message)
-		chatOverlay:SetAlpha(1)
-		chatOverlay.time = GetTime() +1
-		chatOverlay:Show()
-	--end
-end
+

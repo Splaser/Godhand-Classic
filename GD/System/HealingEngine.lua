@@ -226,14 +226,7 @@ if not metaTable1 then
 					--end
 				end
 			end
-			if isChecked("Blacklist") == true and GodHand_data.blackList ~= nil then
-				for i = 1, #GodHand_data.blackList do
-					if o.guid == GodHand_data.blackList[i].guid then
-						PercentWithIncoming, ActualWithIncoming, nAbsorbs = PercentWithIncoming + getValue("Blacklist") , ActualWithIncoming + getValue("Blacklist") , nAbsorbs + getValue("Blacklist");
-						break;
-					end
-				end
-			end
+			
 			return PercentWithIncoming, ActualWithIncoming, nAbsorbs;
 		end
 

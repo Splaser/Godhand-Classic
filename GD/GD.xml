@@ -11,13 +11,8 @@
 	<Script file="GD.Script.lua"/>
 	<Script file="GD.Spell.lua" />
 	<Script file="GD.Functions.lua" />
-	<Script file="System\Beautycase.lua" />
-	<Script file="System\Core.lua" />
 	<Script file="System\GeneralFunctions.lua" />
-	<Script file="System\Interrupts.lua" />
-	<Script file="System\ObjectsManagers.lua" />
-	<Script file="System\UI.lua" />
-	<Script file="System\UsefulFeatures.lua" />
+	<Script file="System\HealingEngine.lua" />
 	<Script file="System\Config\Config.lua" />
 	<Script file="System\Config\ConfigBox.lua" />
 	<Script file="System\Config\ConfigCheck.lua" />

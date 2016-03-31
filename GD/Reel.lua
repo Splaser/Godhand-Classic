@@ -256,7 +256,7 @@ function Reel:GetFishingSpellID()
   local fishingSpellIndex = self:GetFishingSpellBookIndex()
 
   if fishingSpellIndex then
-    local skillType, spellID = GetSpellBookItemInfo(fishingSpellIndex, BOOKTYPE_PROFESSION)
+    local skillType, spellID = _,131474
 
     return spellID
   else
@@ -321,7 +321,8 @@ end
 
 -- Start fishing by casting the fishing spell.
 function Reel:StartFishing()
-  CastSpell(self.__fishingSpellBookIndex, BOOKTYPE_PROFESSION)
+  castSpell("player",131474,false,true);
+  --CastSpell(self.__fishingSpellBookIndex, BOOKTYPE_PROFESSION)
 end
 
 -- Prints a formatted message.

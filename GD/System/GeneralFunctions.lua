@@ -542,11 +542,14 @@ function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,
 		if not (KnownSkip == true or isKnown(SpellID)) then return false end
 		-- gather our spell range information
 		local spellRange = select(6,GetSpellInfo(SpellID))
-		if DistanceSkip == nil then DistanceSkip = false end
-		if spellRange == nil or (spellRange < 4 and DistanceSkip==false) then spellRange = 4 end
-		if DistanceSkip == true or IsSpellInRange(tostring(GetSpellInfo(SpellID)),Unit) == 1 then 
-			spellRange = 40 
+		if DistanceSkip == nil then 
+			DistanceSkip = false 
 		end
+		
+		if spellRange == nil or (spellRange < 4 and DistanceSkip == false) then spellRange = 4 end
+		if DistanceSkip == true or IsSpellInRange(tostring(GetSpellInfo(SpellID)),Unit) == 1 then
+		 	spellRange = 40 
+		 end
 		-- Check unit,if it's player then we can skip facing
 		if (Unit == nil or UnitIsUnit("player",Unit)) or -- Player
 			(Unit ~= nil and UnitIsFriend("player",Unit)) then  -- Ally
@@ -559,7 +562,7 @@ function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,
 			-- skip movement check during spiritwalkers grace and aspect of the fox
 			or UnitBuffID("player",79206) ~= nil  then
 			-- if ability is ready and in range
-			if getSpellCD(SpellID) == 0 and ((getDistance("player",Unit) <= spellRange or IsSpellInRange(tostring(GetSpellInfo(SpellID)),Unit) == 1) or DistanceSkip == true) then
+			if getSpellCD(SpellID) == 0 and (getDistance("player",Unit) <= spellRange or (DistanceSkip == true or IsSpellInRange(tostring(GetSpellInfo(SpellID)),Unit) == 1 ) ) then
 				-- if spam is not allowed
 				if SpamAllowed == false then
 					-- get our last/current cast
@@ -576,6 +579,7 @@ function castSpell(Unit,SpellID,FacingCheck,MovementCheck,SpamAllowed,KnownSkip,
 				elseif (FacingCheck == true or getFacing("player",Unit) == true) and (UnitIsUnit("player",Unit) or getLineOfSight("player",Unit) == true) then
 					currentTarget = UnitGUID(Unit)
 					CastSpellByName(GetSpellInfo(SpellID),Unit)
+					lastSpellCast = SpellID
 					return true
 				end
 			end
@@ -793,7 +797,110 @@ end
 -- at 5 yard i get 2 so i have to remove 3 yard and in the end i have too much so i remove unitsizes
 
 
-
+function IngameDis( unit )
+	-- body
+	local skillList
+	local ClassNum = select(3, UnitClass("player"))
+	if ClassNum == 1 then --Warrior
+		skillList = { 
+		355, -- ["嘲讽"], -- 30
+    	100, -- ["冲锋"], -- 8-25
+    	5246, -- ["破胆怒吼"], -- 8
+    	78, -- ["英勇打击"], -- 5
+    	}
+	end
+	if ClassNum == 2 then --Paladin
+		if canAttack("player",unit) then
+			skillList = { 62124, -- ["清算"], -- 30
+		    20271, -- ["审判"], -- 30
+		    853, -- ["制裁之锤"], -- 10
+		    35395, -- ["十字军打击"], -- 5 
+			}
+		else
+			skillList = {
+			    85673, -- ["荣耀圣令"], -- 40
+			    20217, -- ["王者祝福"], -- 30
+			}
+		end
+	end
+	if ClassNum == 3 then --Hunter
+		skillList = { 	
+			53351, -- ["夺命射击"], -- 45
+    		75, -- ["自动射击"], -- 40
+		 }
+	end
+	if ClassNum == 4 then --Rogue
+		skillList = { 
+			2764, -- ["投掷"], -- 30
+		    2094, -- ["致盲"], -- 15
+		    1752, -- ["影袭"], -- 5
+			}
+	end
+	if ClassNum == 5 then --Priest
+		if canAttack("player",unit) then
+			skillList = { 
+			589, -- ["暗言术：痛"], -- 40
+    		5019, -- ["射击"], -- 30
+			}
+		else
+			skillList = {
+			    2061, -- ["快速治疗"], -- 40
+    			6346, -- ["防护恐惧结界"], -- 30
+			}
+		end
+	end
+	if ClassNum == 6 then --Death Knight
+		skillList = { 
+		47541, -- ["凋零缠绕"], -- 40
+	    49576, -- ["死亡之握"], -- 30
+	    45477, -- ["冰冷触摸"], -- 30
+	    45462, -- ["暗影打击"], -- 5
+		}
+	end
+	if ClassNum == 7 then --Shaman
+		 skillList = { 
+		 		403, -- ["闪电箭"], -- 30
+			    370, -- ["净化术"], -- 30
+			    8050, -- ["烈焰震击"], -- 25
+			    73899, -- ["根源打击"],. -- 5
+		} 
+	end
+	if ClassNum == 8 then --Mage
+		 skillList = { 
+			475, -- ["解除诅咒"], -- 40
+	    	1459, -- ["奥术光辉"], -- 30 
+		} 
+	end
+	if ClassNum == 9 then --Warlock
+		skillList = { 	
+		686, -- ["暗影箭"], -- 40
+    	5019, -- ["射击"], -- 30
+	}
+	end
+	if ClassNum == 10 then --Monk
+		skillList = { 
+			115546, -- ["嚎镇八方"], -- 40
+		    115078, -- ["分筋错骨"], -- 20
+		    100780, -- ["贯日击"], -- 5
+			}
+	end
+	if ClassNum == 11 then --Druid
+		skillList = { 
+			5176, -- ["愤怒"], -- 40
+		    339, -- ["纠缠根须"], -- 35
+		    6795, -- ["低吼"], -- 30
+		    33786, -- ["旋风"], -- 20
+		    22568, -- ["凶猛撕咬"], -- 5
+			}
+	end
+	for i =1 , #skillList do
+		local spelln = tostring(GetSpellInfo(skillList[i]))
+		if IsSpellInRange(spelln,unit) == 1 then
+			return true;		
+		end
+	end
+	return false;
+end
 
 -- /dump UnitCombatReach("target")
 -- if getDistance("player","target") <= 40 then
@@ -1120,7 +1227,7 @@ function makeEnemiesTable(maxDistance)
         --end)
     end
 end
-
+makeEnemiesTable(40);
 -- /dump UnitGUID("target")
 -- /dump getEnemies("target",10)
 -- if #getEnemies("target",10) >= 3 then
@@ -1172,17 +1279,17 @@ end
 -- if getNumEnemies("target",10) >= 3 then
 function getNumEnemies(Unit,Radius)
   	local Units = 0;
- 	for i=1,ObjectCount() do
-		if UnitExists(ObjectWithIndex(i)) == true and bit.band(ObjectType(ObjectWithIndex(i)), ObjectTypes.Unit) == 8 then
-	  		local thisUnit = ObjectWithIndex(i);
-	  		if getCreatureType(thisUnit) then
+ 	for i=1,#enemiesTable do
+		--if UnitExists(ObjectWithIndex(i)) == true and bit.band(ObjectType(ObjectWithIndex(i)), ObjectTypes.Unit) == 8 then
+	  		local thisUnit = enemiesTable.unit;
+	  		--if getCreatureType(thisUnit) then
 	  			if UnitIsVisible(thisUnit) and canAttack("player",thisUnit) and not UnitIsDeadOrGhost(thisUnit) then
 	  				if getDistance(Unit,thisUnit) <= Radius then
 	  					Units = Units+1;
 	   				end
 		 		end
-		 	end
-		end
+		 	--end
+		--end
  	end
  	return Units;
 end
@@ -2272,7 +2379,11 @@ function amac(Unit,Interrupt,Time) --获得指定目标正在施放的法术名�
 	if Time == nil then
 		Time = 0.4
 	end
-	if isHealer(Unit) and ((amac_bak(Unit,Interrupt) == "熔岩爆裂" or amac_bak(Unit,Interrupt) == "精神灼烧" )) then
+	if Interrupt == 0 then
+		Interrupt = false;
+	end
+	
+	if  ((amac_bak(Unit,Interrupt) == "熔岩爆裂" or amac_bak(Unit,Interrupt) == "精神灼烧" ) and isHealer(Unit)) or  amac_bak(Unit,Interrupt) == "真气爆裂" then
 		return false; 
 	end
 	local c,i;
@@ -2301,22 +2412,7 @@ function amac(Unit,Interrupt,Time) --获得指定目标正在施放的法术名�
 						end
 					end
 				end
-						
-			--else
-				
-				--if not Interrupt then
-					--invreturn c;
-				--else
-				--	if not i then
-				--		return c;
-				--	end
-				--end
-				
-				
-			--end
-			
-			
-			
+
 		else
 			c,_,_,_,startTime,_,_,i = UnitChannelInfo(Unit);
 			
@@ -2355,7 +2451,9 @@ function ambc(Unit,Interrupt,Time) --获得指定目标正在施放的法术名�
     if not Unit then
         Unit = "target";
     end
-    
+    if Interrupt == 0 then
+    	Interrupt = false;
+    end
     
     c,_,_,_,_,endTime,_,_,i = UnitCastingInfo(Unit);
     
@@ -2365,7 +2463,7 @@ function ambc(Unit,Interrupt,Time) --获得指定目标正在施放的法术名�
             Time = 0.4;
         end
         
-        if   (endTime/1000) - GetTime() <  Time then
+        if  (endTime/1000) - GetTime() <  Time then
             
             if not Interrupt then
                 return c;
@@ -2612,7 +2710,7 @@ function GlobalIntCC(spellid,radius,face,latancy)
 		face = false
 	end
     if latancy == nil then
-    	latancy = 0.6
+    	latancy = 0.4
     end
 
     if canCast(spellid) then
@@ -2620,8 +2718,7 @@ function GlobalIntCC(spellid,radius,face,latancy)
         	local thisUnit = enemiesTable[i].unit
             if UnitCanAttack(thisUnit,"player") == true and enemiesTable[i].distance <= radius and  isCastingCCSpell(thisUnit,latancy) then
                 if castSpell(thisUnit,spellid,face,false,false,false,_,true,_) then
-                print("强行打断",UnitName(thisUnit),"的控制法术") 
-               		return true
+                	return true
                	end
                	
             end
@@ -2683,6 +2780,10 @@ function isMagicinv(Unit)
 	if Unit == nil then
 		return false
 	end
+	if UnitIsPlayer(Unit) == false then
+		return false;
+	end
+
 	local invpvpm = {
 		19263,	-- Hunter 威慑
 		45438,	-- Mage 冰箱 
@@ -2700,7 +2801,7 @@ function isMagicinv(Unit)
 		
 	}
 	for i=1,#invpvpm do
-		if UnitBuffID(Unit,invpvpm[i])~=nil or UnitDebuffID(Unit,33786)~=nil then
+		if UnitBuffID(Unit,invpvpm[i]) ~= nil or UnitDebuffID(Unit,33786)~=nil then
 			return true
 		end
 	end
@@ -2710,6 +2811,10 @@ end
 function isStun(Unit)
 	if Unit == nil then
 		return false
+	end
+	--phase2 imu
+	if getBuffRemain(Unit,48792) > 0 or getBuffRemain(Unit,46924) > 0  then
+		return true
 	end
 	local invpvps = {
 		46968,	-- 震荡波
@@ -2748,9 +2853,7 @@ function isStun(Unit)
  		123420,--	Stunning Strike
  		20549,--	War Stomp
  		103828,--	Warbringer
-
-
-		
+		33786, -- druid 旋风免疫
 	}
 	--phase1
 	for i=1,#invpvps do
@@ -2758,10 +2861,7 @@ function isStun(Unit)
 			return true
 		end
 	end
-	--phase2 imu
-	if getBuffRemain(Unit,48792)~=0 or getBuffRemain(Unit,46924)~=0  then
-		return true
-	end
+	
 	return false
 end
 
@@ -3062,10 +3162,10 @@ function Tta(radius,spellid,face) --图腾杀手
     if canCast(spellid) then
         for i = 1, #enemiesTable do
             local thisUnit = enemiesTable[i].unit
-            if UnitCanAttack(thisUnit,"player") == true  and getLineOfSight("player", thisUnit) and getDistance("player",thisUnit) <= radius and ( UnitName(thisUnit) == "联盟军旗" or UnitName(thisUnit) == "部落军旗" or UnitName(thisUnit) == "灵魂链接图腾" or  UnitName(thisUnit) == "治疗之泉图腾" or UnitName(thisUnit) == "电能图腾" or   UnitName(thisUnit) == "陷地图腾" or UnitName(thisUnit) == "风行图腾" or UnitName(thisUnit) == "地缚图腾" or UnitName(thisUnit) == "暴雨图腾")  then
+            if UnitHealthMax(thisUnit) <= 100000 and UnitCanAttack(thisUnit,"player") == true  and getLineOfSight("player", thisUnit) and getDistance("player",thisUnit) <= radius and ( UnitName(thisUnit) == "治疗之潮图腾" or UnitName(thisUnit) == "联盟军旗" or UnitName(thisUnit) == "部落军旗" or UnitName(thisUnit) == "灵魂链接图腾" or  UnitName(thisUnit) == "治疗之泉图腾" or UnitName(thisUnit) == "电能图腾" or   UnitName(thisUnit) == "陷地图腾" or UnitName(thisUnit) == "风行图腾" or UnitName(thisUnit) == "地缚图腾" or UnitName(thisUnit) == "暴雨图腾")  then
                 if castSpell(thisUnit,spellid,face,false) then 
                 	print("攻击", tostring(UnitName(thisUnit), "用" ,select(1,GetSpellInfo(spellid))))
-                    return true
+                    return true;
                 end
             end
         end
@@ -3077,9 +3177,8 @@ end
 function GlobalRef()
         for i = 1 , #enemiesTable do 
             local thisUnit = enemiesTable[i].unit
-            if isCastingCCSpellLast(thisUnit) and  UnitCanAttack(thisUnit,"player") == true and enemiesTable[i].distance <= 30 then
-            	print("探测到CC法术")
-                return true;
+            if UnitIsPlayer(thisUnit) and isCastingCCSpellLast(thisUnit) and  UnitCanAttack(thisUnit,"player") and enemiesTable[i].distance <= 30 then
+            	return true;
             end
 
         end
@@ -3188,35 +3287,37 @@ function AutoTaunt(spellid,radius)
     return false
 end
 --自动调整aoedps法术
-function WiseAoe(unit,spellid,radius,nearbyradius)
-	if nearbyradius == nil then
-		nearbyradius = 8;
-	end
-	local maxnearbycount = 0;
-	local maxunitnum = 1;
-	for i = 1 , ObjectCount() do
-		if bit.band(ObjectType(ObjectWithIndex(i)),0x8) > 0 and UnitExists(ObjectWithIndex(i)) == true  then --是一个有血量的Unit
-			local  thisUnit = ObjectWithIndex(i);
-			if getDistance("player",thisUnit) <= nearbyradius then
-
-				local  nearbycount = getNumEnemies(thisUnit,nearbyradius) - 1 --附近数量减1
-				if nearbycount >= maxnearbycount then
-					maxnearbycount = nearbycount;
-					maxunitnum = i;
-				end
-			end
-		end
-
-	end
-	if maxnearbycount <1 then
-		return false,nil;
-	end
-	--施法 返回第二个值为unit 
-	if castGround(ObjectWithIndex(maxunitnum),spellid,radius) then
-		return true,ObjectWithIndex(maxunitnum);
-	end
-
-	return false,nil;
+function WiseAoe(spellid,maxcount,radius,nearbyradius)
+    if nearbyradius == nil then
+        nearbyradius = 8;
+    end
+    local maxu
+    local counts = 0;
+    local maxc = 0;
+    for i =1,#enemiesTable do
+        local tg1= enemiesTable[i].unit
+        if canAttack("player",tg1) and UnitIsPlayer(tg1) and not UnitIsDeadOrGhost(tg1) then
+            for j =i, #enemiesTable do
+                local tg2 = enemiesTable[j].unit
+                if isMagicinv(tg2) == false and UnitIsPlayer(tg2) and getDistance(tg2,tg1) <= nearbyradius and isStun(tg2) == false and canAttack("player",tg2) and UnitIsUnit(tg1,tg2) == false   and  not UnitIsDeadOrGhost(tg2)  then 
+                    counts = counts+1;
+                end
+            end
+        end
+        if maxc < counts then
+            maxc = counts;
+            maxu = tg1;
+        end
+    end
+    if maxc < maxcount then
+        return 0;
+    end
+    --施法 
+    if castGround(maxu,spellid,radius) then
+        return maxc;
+    end
+    
+    return 0;
 end
 
 --自动进攻驱散 保护和反恐结界
@@ -3243,29 +3344,28 @@ end
 --pvp SS 3dot
 function AffDots (unit)
 	if  isLongTimeCCed(unit) == false and isMagicinv(unit) ==false  then
-    --wc
-    if getDebuffRemain(unit,30108,"player") < 5 then
-        if castSpell(unit,30108,true,true,false) then
-            return;
-        end
-    end
-    --fs
-    if getDebuffRemain(unit,172,"player") < 5.4 then
-        if castSpell(unit,172,true,false,false) then
-            return;
-        end
-    end
-    --tc
-    if getDebuffRemain(unit,980,"player") < 7.2 then
-        if castSpell(unit,980,true,false,false) then
-            return;
-        end
-    end
+	    --wc
+	    if getDebuffRemain(unit,30108,"player") < 5 then
+	        if castSpell(unit,30108,true,true,false) then
+	        end
+	    end
+	    --fs
+	    if getDebuffRemain(unit,172,"player") < 5.4 then
+	        if castSpell(unit,172,true,false,false) then
+	           
+	        end
+	    end
+	    --tc
+	    if getDebuffRemain(unit,980,"player") < 7.2 then
+	        if castSpell(unit,980,true,false,false) then
+	            
+	        end
+	    end
 	end
-	return false;
+	return;
 end
 function MaxDoted(unit)
-	if 	getDebuffRemain(unit,30108,"player") > 15 and getDebuffRemain(unit,172,"player") > 16 and getDebuffRemain(unit,980,"player") > 18 then
+	if 	getDebuffRemain(unit,30108,"player") > 9 and getDebuffRemain(unit,172,"player") > 13 and getDebuffRemain(unit,980,"player") > 13 then
 		return true;
 	else 
 		return false;
@@ -3286,10 +3386,10 @@ function DotAround()
 		if UnitCanAttack(thisUnit,"player") == true and UnitIsPlayer(thisUnit) and getDistance(thisUnit,"player") <= 40 and FullDoted(thisUnit) ==false then
 			AffDots(thisUnit)
 			--print("给",UnitName(thisUnit),"3Dot...ing")
-			return true
+			break;
 		end
 	end
-	return false;
+	return;
 end
 --治疗判定
 function isHealer(unit)
@@ -3465,7 +3565,7 @@ function getNumTargeting(unit,radius)
 	for i = 1, #enemiesTable do
 	
 		local thisunit = enemiesTable[i].unit;
-		if getDistance(thisunit,unit) <= radius and canAttack(thisunit,unit) and UnitGUID(thisunit.."target") ~= UnitGUID(unit) 
+		if getDistance(thisunit,unit) <= radius and canAttack(thisunit,unit) and UnitTarget(thisunit) == ObjectPointer(unit)
  and UnitIsPlayer(thisunit) and UnitIsDeadOrGhost(thisunit) == false and isLongTimeCCed(thisunit) == false and isHealer(thisunit) == false then
 			hitcount = hitcount + 1;
 		end
@@ -3485,4 +3585,157 @@ function castCursor(spellid)
 		
 	end
 	return false;
+end
+--test max min dot 时间
+function dottest( )
+	--dot测试
+	local tg = "target"
+	local zj = "player"
+	local maxu=nil;
+	local tmax=0;
+	local tmin=0;
+	local minu=nil;
+	for i =1,#enemiesTable do
+	    local tg1 =enemiesTable[i].unit
+	    if canAttack(zj,tg1) then
+	        local t1,t2,t3= getDebuffRemain(tg1,30108,zj),getDebuffRemain(tg1,172,zj),getDebuffRemain(tg1,980,zj);
+	        if t1+t2+t3 > tmax and t1 >10 and t2 > 8 and t3 > 8 then
+	            tmax = t1+ t2+ t3;
+	            maxu = tg1;
+	        end
+	        
+	    end
+	end
+	for j =1,#enemiesTable do
+	    local tg1 =enemiesTable[j].unit
+	    if canAttack(zj,tg1) then
+	        local t1,t2,t3= getDebuffRemain(tg1,30108,zj),getDebuffRemain(tg1,172,zj),getDebuffRemain(tg1,980,zj);
+	        if t1+t2+t3 <= tmin then
+	        	tmin = t1+ t2+ t3;
+	            minu = tg1;
+	        end
+	        
+	    end
+	end
+
+	return maxu,minu;
+	
+end
+
+function TempInt(spellid)
+	if spellid == nil then
+		spellid = 57994;
+	end
+
+
+	 --打断法术
+	            local longTimeCCstr = {
+	                "旋风",    
+	                "变形术",   
+	                "忏悔",    
+	                "超度邪恶",   
+	                "统御意志",   
+	                "妖术",    
+	                "恐惧",    
+	                "混乱之箭",
+	                "痛苦无常",
+	                "鬼影缠身",
+	                "吸取灵魂",
+	                "圣光闪现",
+	                "圣光术",
+	                "谴责",
+	                "荣耀圣令",
+	                "治疗之涌",    
+	                "愈合",
+	                "吸取灵魂",
+	                "苦修",
+	                "快速治疗",
+	                "愈合祷言",
+	                "抚慰之雾",
+	                "冰霜之环",
+	                "群体驱散",
+	                "冰霜之颌",
+		            "治疗波",
+	                "恶魔之箭",
+	                "吸血鬼之触"  
+	            }
+	            --秒断引导
+	            local MCCstr = {               
+	                "吸取灵魂",                
+	                "苦修",                
+	                "抚慰之雾"               
+	            }
+	    for i = 1, #enemiesTable do       
+	        local tg1 = enemiesTable[i].unit
+	        if UnitCanAttack(tg1,"player") and getDistance("player",tg1) < 25   then 
+	            for j =1,#longTimeCCstr do
+	                if ambc(tg1,1,0.2) == longTimeCCstr[j] or amacr(tg1,spellid,0.6,1.5) == longTimeCCstr[j] then
+	                    if castSpell(tg1,spellid,true,false,true) then
+	                        return;
+	                    end
+	                end
+	            end          
+	            
+	            for k=1,#MCCstr do
+	                if amac(tg1,1,0) == MCCstr[k] then
+	                    if castSpell(tg1,spellid,true,false,true) then
+	                        return;
+	                    end
+	                end
+	            end
+	        end
+        end
+    
+end    
+
+--指定法术id的随机时间段打断
+function amacr(unit,spellid,time1,time2)
+    local c,i;
+    if not unit then
+        unit = "target"
+    end
+    
+    local function rtime() --返回time
+        local A = time2-time1
+        local r = time1 + A*math.random()
+        return r;
+    end
+    if getSpellCD(spellid) == 0 then
+        if timeneedam == nil then
+            timeneedam = rtime();
+        end
+    else
+         timeneedam= nil;
+    end
+        
+    c,_,_,_,startTime,_,_,_,i = UnitCastingInfo(unit);
+    if timeneedam then
+	    if c then
+	        if startTime then
+	            if GetTime() - (startTime/1000) > timeneedam then
+	                if not i then
+	                    
+	                    return c,timeneedam;
+	                end
+	            end
+	        end
+	        
+	    else
+	        
+	        c,_,_,_,startTime,_,_,i = UnitChannelInfo(unit);
+	        if startTime then
+	            if GetTime() - (startTime/1000) > timeneedam then
+	                
+	                if not i then
+	                    
+	                    return c,timeneedam;
+	                end
+	            end
+	        end
+	        
+	        
+	    end
+	end
+    
+    return false,false;
 end

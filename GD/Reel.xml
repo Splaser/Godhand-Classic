@@ -45,7 +45,7 @@
 		</Frames>
 
 		<Scripts>
-			<OnLoad>if FireHack then Reel:Initialize(self) end</OnLoad>
+			<OnLoad>if IsHackEnabled then Reel:Initialize(self) end</OnLoad>
 			<OnUpdate>Reel:Run()</OnUpdate>
 		</Scripts>
 	</Frame>

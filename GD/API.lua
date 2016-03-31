@@ -16,7 +16,7 @@
   This file extends the API of FireHack.
 --]]
 
-if not FireHack then
+if not IsHackEnabled then
   return
 end
 

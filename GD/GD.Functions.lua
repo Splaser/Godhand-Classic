@@ -71,7 +71,6 @@ function GDRun(spell,unit,mouse) -- 施放技能
 		tspell=spell;
 		RunMacroText(spell)
 	else
-	--local t1,t2,_,spellId = true,true,true,true;
 	local t1,t2,_,spellId = GD_GetSpellInf(spell);
 	--print(t1,t2,spellId)
 	if not t1 then
@@ -107,9 +106,9 @@ function GDRun(spell,unit,mouse) -- 施放技能
 	end
 	if(tspell and tspell~="")then
 		if mouse then
-			GDHelper_OnMacro(string.format("%s#%s",mouse,tspell),5)
+			--GDHelper_OnMacro(string.format("%s#%s",mouse,tspell),5)
 		else
-			GDHelper_OnMacro(tspell)
+			--GDHelper_OnMacro(tspell)
 		end
 		return true;
 	else

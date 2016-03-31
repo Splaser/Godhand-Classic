@@ -1645,9 +1645,9 @@ lib.Input:SetScript("OnClick",function(self)
 							
 								tbl.Name=temptxt;
 								if(old)then
-									--[[GD.Helper.List[old]=tbl;
+									GD.Helper.List[old]=tbl;
 									GD.Helper.Current=temptxt;
-									lib.Scheme:Update();]]
+									lib.Scheme:Update();
 									GDHelper_SetStatus(string.format(L["SCHEMECONTROL_INPUT_STATUS1"],temptxt));
 								else
 									table.insert(GD.Helper.List,tbl);
@@ -1685,9 +1685,9 @@ lib.Input:SetScript("OnClick",function(self)
 								
 								tbl.Name=temptxt;
 								if(old)then
-									--[[GD.Helper.List[old]=tbl;
+									GD.Helper.List[old]=tbl;
 									GD.Helper.Current=temptxt;
-									lib.Scheme:Update();]]
+									lib.Scheme:Update();
 									GDHelper_SetStatus(string.format(L["SCHEMECONTROL_INPUT_STATUS1"],temptxt));
 								else
 									table.insert(GD.Helper.List,tbl);
